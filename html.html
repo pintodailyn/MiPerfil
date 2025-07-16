@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="css.css">
+  <title>Mi Perfil</title>
+</head>
+<body>
+
+  <header>
+    <h1>Mi Perfil</h1>
+  </header>
+
+  <section id="sobre-mi">
+    <h2>Sobre Mí</h2>
+    <p>Mi nombre es Dailin Pinto, soy estudiante de informática, me considero una persona espontánea y dinámica. Mis gustos e intereses se inclinan a la parte de embellecimiento femenino. Aunque sinceramente me hubiese encantado estudiar psicología para empatizar y ayudar a muchas personas.</p>
+  </section>
+
+  <section id="experiencia">
+    <h2>Experiencia</h2>
+    <p><strong>Atención al Cliente</strong> en Salones de Belleza</p>
+  </section>
+
+  <section id="educacion">
+    <h2>Educación</h2>
+    <p>U.E. Dr. Luis Beltrán Prieto Figueroa</p>
+    <p>Actualmente estudiante de Informática en el IUTA, cursando el séptimo trimestre.</p>
+  </section>
+
+  <section id="habilidades">
+    <h2>Habilidades</h2>
+    <ul>
+      <li><strong>Tech:</strong> HTML, CSS, Python, Java</li>
+      <li><strong>Frameworks:</strong> Django, FastAPI, Laravel</li>
+      <li><strong>Personal:</strong> Hacer uñas, verme bonita</li>
+    </ul>
+  </section>
+
+  <section id="contacto">
+    <h2>Contacto</h2>
+    <form id="contactForm">
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" required>
+        <small class="error" id="error-nombre"></small>
+      </div>
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input type="email" id="email" name="email" required>
+        <small class="error" id="error-email"></small>
+      </div>
+      <div class="form-group">
+        <label for="mensaje">Mensaje</label>
+        <textarea id="mensaje" name="mensaje" rows="4" required></textarea>
+        <small class="error" id="error-mensaje"></small>
+      </div>
+      <button type="submit">Enviar</button>
+    </form>
+    <div id="confirmacion" class="hidden">
+      <p>¡Gracias por tu mensaje! Te responderé pronto.</p>
+    </div>
+  </section>
+
+  <script>
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  // Referencias a campos y mensajes de error
+  const nombre  = document.getElementById('nombre');
+  const email   = document.getElementById('email');
+  const mensaje = document.getElementById('mensaje');
+  const errors  = {
+    nombre:   document.getElementById('error-nombre'),
+    email:    document.getElementById('error-email'),
+    mensaje:  document.getElementById('error-mensaje')
+  };
+  let valid = true;
+
+  // Limpia errores previos
+  Object.values(errors).forEach(el => el.textContent = '');
+
+  // Validación: nombre
+  if (nombre.value.trim() === '') {
+    errors.nombre.textContent = 'El nombre es obligatorio.';
+    valid = false;
+  }
+
+  // Validación: email
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(email.value)) {
+    errors.email.textContent = 'Introduce un correo válido.';
+    valid = false;
+  }
+
+  // Validación: mensaje
+  if (mensaje.value.trim() === '') {
+    errors.mensaje.textContent = 'El mensaje no puede estar vacío.';
+    valid = false;
+  }
+
+  if (!valid) return;  // Detiene el envío si hay errores
+
+  // Prepara datos a enviar
+  const data = {
+    nombre: nombre.value.trim(),
+    email:  email.value.trim(),
+    mensaje: mensaje.value.trim()
+  };
+
+  try {
+    // Envío a httpbin.org para pruebas
+    const resp = await fetch('https://httpbin.org/post', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (!resp.ok) throw new Error('Error en el envío');
+
+    // Parsear y mostrar respuesta en consola
+    const result = await resp.json();
+    console.log('Respuesta de httpbin.org:', result);
+
+    // Mostrar confirmación al usuario
+    document.getElementById('contactForm').classList.add('hidden');
+    document.getElementById('confirmacion').classList.remove('hidden');
+  } catch (err) {
+    alert('Hubo un problema enviando el formulario. Intenta más tarde.');
+    console.error(err);
+  }
+});
+
+  </script>
+</body>
+</html>
